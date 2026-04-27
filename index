@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFL Values Interactive</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding: 0 0 32px;
+    background: linear-gradient(180deg, #04285C, #021a3a);
+    color: #fff;
+  }
+
+  .activity-wrapper {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 0 16px 24px;
+  }
+
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 24px 16px 8px;
+    font-size: clamp(28px, 5vw, 40px);
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+
+  .instruction {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.5;
+    opacity: 0.92;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .progress {
+    text-align: center;
+    margin: 10px 0 16px;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .scenario-area {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.96);
+    color: #111;
+    padding: 18px;
+    border-radius: 16px;
+    width: min(520px, 100%);
+    cursor: grab;
+    text-align: center;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    line-height: 1.45;
+  }
+
+  .card:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+  }
+
+  .card:focus-visible,
+  .value-button:focus-visible,
+  .feedback button:focus-visible {
+    outline: 4px solid #38A8FC;
+    outline-offset: 4px;
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0 0 22px;
+  }
+
+  .column {
+    border-radius: 16px;
+    padding: 12px;
+    min-height: 230px;
+    background: rgba(255,255,255,0.09);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .column::before {
+    content: "";
+    display: block;
+    height: 14px;
+    border-radius: 14px 14px 0 0;
+    margin: -12px -12px 12px;
+  }
+
+  .column[data-value="win"]::before { background: #1F6FB2; }
+  .column[data-value="team"]::before { background: #F2A900; }
+  .column[data-value="passion"]::before { background: #D64545; }
+  .column[data-value="fair"]::before { background: #5CB8B2; }
+
+  .column.dragover,
+  .column.keyboard-selected {
+    background: rgba(255,255,255,0.17);
+    box-shadow: 0 0 0 3px rgba(56,168,252,0.8), 0 14px 32px rgba(0,0,0,0.28);
+    transform: translateY(-3px);
+  }
+
+  .value-button {
+    width: 100%;
+    min-height: 54px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 18px;
+    letter-spacing: 0.3px;
+  }
+
+  .dropzone {
+    min-height: 140px;
+    border: 2px dashed rgba(255,255,255,0.5);
+    border-radius: 12px;
+    padding: 8px;
+  }
+
+  .placed {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.35;
+    background: rgba(255,255,255,0.16);
+    padding: 10px;
+    border-radius: 10px;
+    animation: placeIn 0.25s ease;
+  }
+
+  .feedback {
+    display: none;
+    margin: 18px auto 24px;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.96);
+    color: #111;
+    max-width: 900px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.24);
+    animation: fadeIn 0.25s ease;
+  }
+
+  .feedback h2 {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    font-size: 22px;
+    color: #04285C;
+  }
+
+  .feedback p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .feedback button {
+    margin-top: 14px;
+    padding: 10px 16px;
+    background: #04285C;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 15px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes placeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @media (max-width: 900px) {
+    .value-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .activity-wrapper {
+      padding: 0 12px 28px;
+    }
+
+    .value-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .column {
+      min-height: 180px;
+    }
+
+    .value-button {
+      font-size: 17px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="activity-wrapper">
+  <h1>Match the Behaviour to the Value</h1>
+
+  <p class="instruction">
+    Read the behaviour, then match it to the AFL value it best reflects. You can drag the card into a value box, or select a value heading using your keyboard, mouse or touch screen.
+  </p>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="scenario-area" id="scenario-area"></div>
+
+  <div class="value-grid" aria-label="AFL value options">
+    <section class="column" data-value="win" aria-label="Play to Win">
+      <button class="value-button" type="button" data-value="win">Play to Win</button>
+      <div class="dropzone" aria-label="Placed examples for Play to Win"></div>
+    </section>
+
+    <section class="column" data-value="team" aria-label="Play as One Team">
+      <button class="value-button" type="button" data-value="team">Play as One Team</button>
+      <div class="dropzone" aria-label="Placed examples for Play as One Team"></div>
+    </section>
+
+    <section class="column" data-value="passion" aria-label="Play with Passion">
+      <button class="value-button" type="button" data-value="passion">Play with Passion</button>
+      <div class="dropzone" aria-label="Placed examples for Play with Passion"></div>
+    </section>
+
+    <section class="column" data-value="fair" aria-label="Play Fair">
+      <button class="value-button" type="button" data-value="fair">Play Fair</button>
+      <div class="dropzone" aria-label="Placed examples for Play Fair"></div>
+    </section>
+  </div>
+
+  <section class="feedback" id="feedback" aria-live="polite" tabindex="-1">
+    <h2>Feedback</h2>
+    <p id="feedback-text"></p>
+    <button type="button" id="feedback-button">Next</button>
+  </section>
+</div>
+
+<script>
+const data = [
+  {
+    text: "You notice a process is slowing your team down. Instead of working around it, you raise it and suggest a more effective approach to improve the overall outcome.",
+    value: "win",
+    feedback: "This is a strong example of Play to Win because it focuses on improving the quality and effectiveness of the outcome."
+  },
+  {
+    text: "You complete a piece of work, but before submitting it, you refine and improve it to ensure it meets a high standard.",
+    value: "win",
+    feedback: "This reflects Play to Win because it shows a commitment to excellence and delivering work at a high standard."
+  },
+  {
+    text: "A teammate needs help with Excel formulas, so you share your skills and offer your time to show them how to do it and how they could use AI to support them further.",
+    value: "team",
+    feedback: "This is a strong example of Play as One Team because you are supporting a teammate and helping build capability across the team."
+  },
+  {
+    text: "You proactively check in with a teammate to see how their work is progressing and offer support to help them stay on track.",
+    value: "team",
+    feedback: "This reflects Play as One Team because it focuses on supporting others and contributing to shared success."
+  },
+  {
+    text: "You take extra care in preparing something because you know it will impact others’ experience.",
+    value: "passion",
+    feedback: "This is a strong example of Play with Passion because it shows pride, care and commitment to your work."
+  },
+  {
+    text: "You speak positively about a project and the team, even during challenges.",
+    value: "passion",
+    feedback: "This reflects Play with Passion because it shows energy, belief and commitment even when things are challenging."
+  },
+  {
+    text: "You hear something in a conversation that doesn’t sit right, and you choose to address it respectfully.",
+    value: "fair",
+    feedback: "This is a strong example of Play Fair because it shows integrity and a willingness to speak up respectfully."
+  },
+  {
+    text: "You adjust how you communicate to ensure others feel included and respected.",
+    value: "fair",
+    feedback: "This reflects Play Fair because it demonstrates respect and a commitment to inclusion."
+  }
+];
+
+let currentIndex = 0;
+
+// Shuffle scenarios for randomness
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+shuffleArray(data);
+let draggedCard = null;
+let answeredCorrectly = false;
+
+const scenarioArea = document.getElementById('scenario-area');
+const progress = document.getElementById('progress');
+const feedback = document.getElementById('feedback');
+const feedbackText = document.getElementById('feedback-text');
+const feedbackButton = document.getElementById('feedback-button');
+const columns = document.querySelectorAll('.column');
+const valueButtons = document.querySelectorAll('.value-button');
+
+function loadCard() {
+  feedback.style.display = 'none';
+  answeredCorrectly = false;
+  draggedCard = null;
+  scenarioArea.innerHTML = '';
+
+  if (currentIndex >= data.length) {
+    progress.textContent = '';
+    scenarioArea.innerHTML = '<div class="card" role="status">All scenarios complete ✔<br><br>Select CONTINUE to reflect on how you live the values in your own work.</div>';
+    valueButtons.forEach(button => button.disabled = true);
+    return;
+  }
+
+  const item = data[currentIndex];
+  progress.textContent = `Scenario ${currentIndex + 1} of ${data.length}`;
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.draggable = true;
+  card.tabIndex = 0;
+  card.setAttribute('role', 'group');
+  card.setAttribute('aria-label', `Current behaviour: ${item.text}`);
+  card.textContent = item.text;
+  card.dataset.value = item.value;
+  card.dataset.feedback = item.feedback;
+
+  card.addEventListener('dragstart', () => {
+    draggedCard = card;
+  });
+
+  scenarioArea.appendChild(card);
+}
+
+function checkAnswer(selectedValue) {
+  if (currentIndex >= data.length || answeredCorrectly) return;
+
+  const item = data[currentIndex];
+
+  if (selectedValue === item.value) {
+    answeredCorrectly = true;
+    placeCurrentScenario(item);
+    showFeedback(item.feedback, true);
+  } else {
+    showFeedback('Not quite. Try a different value and think about what the behaviour shows.', false);
+  }
+}
+
+function placeCurrentScenario(item) {
+  const correctColumn = document.querySelector(`.column[data-value="${item.value}"]`);
+  const dropzone = correctColumn.querySelector('.dropzone');
+  const placed = document.createElement('div');
+
+  placed.className = 'placed';
+  placed.textContent = item.text;
+  dropzone.appendChild(placed);
+
+  scenarioArea.innerHTML = '';
+}
+
+function showFeedback(message, isCorrect) {
+  feedbackText.textContent = message;
+  feedbackButton.textContent = isCorrect ? 'Next' : 'Try Again';
+  feedbackButton.onclick = isCorrect ? nextCard : closeFeedback;
+  feedback.style.display = 'block';
+  feedback.focus();
+}
+
+function closeFeedback() {
+  feedback.style.display = 'none';
+  const card = scenarioArea.querySelector('.card');
+  if (card) card.focus();
+}
+
+function nextCard() {
+  currentIndex++;
+  loadCard();
+}
+
+columns.forEach(column => {
+  const value = column.dataset.value;
+
+  column.addEventListener('dragover', event => {
+    event.preventDefault();
+    column.classList.add('dragover');
+  });
+
+  column.addEventListener('dragleave', () => {
+    column.classList.remove('dragover');
+  });
+
+  column.addEventListener('drop', event => {
+    event.preventDefault();
+    column.classList.remove('dragover');
+    checkAnswer(value);
+  });
+});
+
+valueButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    checkAnswer(button.dataset.value);
+  });
+});
+
+loadCard();
+</script>
+
+</body>
+</html>
