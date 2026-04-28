@@ -15,61 +15,112 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    min-height: 100vh;
-    padding: 0 0 32px;
-    background: linear-gradient(180deg, #04285C, #021a3a);
+    padding: 0;
+    background: transparent;
     color: #fff;
   }
 
   .activity-wrapper {
-    width: min(760px, 100%);
+    width: 100%;
+    max-width: 860px;
     margin: 0 auto;
-    padding: 0 10px 12px;
+    padding: 14px 16px 16px;
+    background: linear-gradient(180deg, #04285C, #021a3a);
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.18);
   }
 
   h1 {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
     text-align: center;
-    padding: 10px 8px 2px;
-    font-size: clamp(20px, 3vw, 26px);
-    margin: 0;
+    padding: 0;
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.1;
+    margin: 0 0 6px;
   }
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 6px 0 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #38A8FC;
+  transition: width 0.3s ease;
+}
 
   .instruction {
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.85;
+    max-width: 620px;
+    margin: 0 auto;
+  }
     line-height: 1.3;
-    opacity: 0.9;
-    max-width: 520px;
+    opacity: 0.92;
+    max-width: 620px;
     margin: 0 auto;
   }
 
   .progress {
     text-align: center;
-    margin: 10px 0 16px;
-    font-size: 14px;
-    opacity: 0.8;
+    margin: 6px 0 8px;
+    font-size: 11px;
+    opacity: 0.85;
   }
 
   .scenario-area {
     display: flex;
     justify-content: center;
-    padding: 6px 0;
+    padding: 4px 0 16px; /* increased bottom spacing to match gap below boxes */
   }
 
   .card {
-    background: rgba(255,255,255,0.96);
+    position: relative;
+    background: #ffffff;
     color: #111;
-    padding: 10px;
-    border-radius: 10px;
-    width: min(380px, 100%);
+    padding: 14px 16px;
+    border-radius: 14px;
+    width: min(420px, 100%);
     cursor: grab;
     text-align: center;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.18);
-    line-height: 1.3;
-    font-size: 13px;
-  }
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    line-height: 1.4;
+    font-size: 16px;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    animation: slideIn 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
   .card:active {
     cursor: grabbing;
@@ -85,20 +136,27 @@
 
   .value-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin: 0 0 10px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 16px; /* keeps consistent spacing below boxes */
   }
 
   .column {
     border-radius: 10px;
-    padding: 6px;
-    min-height: 120px;
-    background: rgba(255,255,255,0.08);
+    padding: 7px;
+    min-height: 115px;
+    background: rgba(255,255,255,0.1);
     backdrop-filter: blur(6px);
     position: relative;
     overflow: hidden;
+    transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   }
+
+.column.correct {
+  background: rgba(56,168,252,0.2);
+  box-shadow: 0 0 0 2px rgba(56,168,252,0.6), 0 8px 20px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
 
   .column::before {
     content: "";
@@ -121,7 +179,7 @@
 
   .value-button {
     width: 100%;
-    min-height: 54px;
+    min-height: 30px;
     border: 0;
     background: transparent;
     color: #fff;
@@ -129,13 +187,14 @@
     cursor: pointer;
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
-    font-size: 18px;
-    letter-spacing: 0.3px;
+    font-size: 13px;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
   }
 
   .dropzone {
-    min-height: 70px;
-    border: 1.5px dashed rgba(255,255,255,0.5);
+    min-height: 62px;
+    border: 1.5px dashed rgba(255,255,255,0.55);
     border-radius: 8px;
     padding: 4px;
   }
@@ -147,43 +206,50 @@
     background: rgba(255,255,255,0.14);
     padding: 6px;
     border-radius: 6px;
-  }
+    animation: popIn 0.25s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
   .feedback {
     display: none;
-    margin: 8px auto 14px;
-    padding: 10px;
+    margin: 8px auto 0;
+    padding: 10px 12px;
     border-radius: 10px;
     background: rgba(255,255,255,0.96);
     color: #111;
-    max-width: 600px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.18);
+    max-width: 760px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
   }
 
   .feedback h2 {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
-    margin: 0 0 8px;
-    font-size: 22px;
+    margin: 0 0 4px;
+    font-size: 16px;
     color: #04285C;
   }
 
   .feedback p {
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.35;
+    font-size: 12px;
   }
 
   .feedback button {
-    margin-top: 14px;
-    padding: 10px 16px;
+    margin-top: 8px;
+    padding: 7px 14px;
     background: #04285C;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 7px;
     cursor: pointer;
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .sr-only {
@@ -208,10 +274,11 @@
     to { opacity: 1; transform: scale(1); }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 760px) {
     .value-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
   }
 
   @media (max-width: 560px) {
@@ -252,6 +319,7 @@
   </p>
 
   <div class="progress" id="progress"></div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
 
   <div class="scenario-area" id="scenario-area"></div>
 
@@ -328,9 +396,6 @@ const data = [
   }
 ];
 
-let currentIndex = 0;
-
-// Shuffle scenarios for randomness
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -339,33 +404,48 @@ function shuffleArray(array) {
 }
 
 shuffleArray(data);
-let draggedCard = null;
+
+let currentIndex = 0;
 let answeredCorrectly = false;
 
 const scenarioArea = document.getElementById('scenario-area');
 const progress = document.getElementById('progress');
+const progressFill = document.getElementById('progress-fill');
 const feedback = document.getElementById('feedback');
 const feedbackText = document.getElementById('feedback-text');
 const feedbackButton = document.getElementById('feedback-button');
 const columns = document.querySelectorAll('.column');
 const valueButtons = document.querySelectorAll('.value-button');
 
+function updateProgress() {
+  if (currentIndex >= data.length) {
+    progress.textContent = '';
+    if (progressFill) progressFill.style.width = '100%';
+    return;
+  }
+
+  progress.textContent = `Scenario ${currentIndex + 1} of ${data.length}`;
+  if (progressFill) {
+    const percent = (currentIndex / data.length) * 100;
+    progressFill.style.width = percent + '%';
+  }
+}
+
 function loadCard() {
   feedback.style.display = 'none';
   answeredCorrectly = false;
-  draggedCard = null;
   scenarioArea.innerHTML = '';
 
   if (currentIndex >= data.length) {
-    progress.textContent = '';
+    updateProgress();
     scenarioArea.innerHTML = '<div class="card" role="status">All scenarios complete ✔<br><br>Select CONTINUE to reflect on how you live the values in your own work.</div>';
     valueButtons.forEach(button => button.disabled = true);
     return;
   }
 
-  const item = data[currentIndex];
-  progress.textContent = `Scenario ${currentIndex + 1} of ${data.length}`;
+  updateProgress();
 
+  const item = data[currentIndex];
   const card = document.createElement('div');
   card.className = 'card';
   card.draggable = true;
@@ -373,11 +453,13 @@ function loadCard() {
   card.setAttribute('role', 'group');
   card.setAttribute('aria-label', `Current behaviour: ${item.text}`);
   card.textContent = item.text;
-  card.dataset.value = item.value;
-  card.dataset.feedback = item.feedback;
 
   card.addEventListener('dragstart', () => {
-    draggedCard = card;
+    card.classList.add('dragging');
+  });
+
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
   });
 
   scenarioArea.appendChild(card);
@@ -399,9 +481,13 @@ function checkAnswer(selectedValue) {
 
 function placeCurrentScenario(item) {
   const correctColumn = document.querySelector(`.column[data-value="${item.value}"]`);
+  if (!correctColumn) return;
+
+  correctColumn.classList.add('correct');
+  setTimeout(() => correctColumn.classList.remove('correct'), 600);
+
   const dropzone = correctColumn.querySelector('.dropzone');
   const placed = document.createElement('div');
-
   placed.className = 'placed';
   placed.textContent = item.text;
   dropzone.appendChild(placed);
