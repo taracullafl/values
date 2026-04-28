@@ -22,9 +22,9 @@
 
   .activity-wrapper {
     width: 100%;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 14px 16px 16px;
+    max-width: 100%;
+    margin: 0;
+    padding: 16px 20px;
     background: linear-gradient(180deg, #04285C, #021a3a);
     border-radius: 14px;
     box-shadow: 0 10px 28px rgba(0,0,0,0.18);
@@ -90,7 +90,7 @@
     color: #111;
     padding: 14px 16px;
     border-radius: 14px;
-    width: min(420px, 100%);
+    width: min(600px, 100%);
     cursor: grab;
     text-align: center;
     box-shadow: 0 6px 16px rgba(0,0,0,0.15);
@@ -137,14 +137,15 @@
   .value-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    margin: 0 0 16px; /* keeps consistent spacing below boxes */
+    gap: 12px;
+    width: 100%;
+    margin: 0 0 16px;
   }
 
   .column {
     border-radius: 10px;
-    padding: 7px;
-    min-height: 115px;
+    padding: 8px;
+    min-height: 130px;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(6px);
     position: relative;
@@ -193,10 +194,10 @@
   }
 
   .dropzone {
-    min-height: 62px;
+    min-height: 76px;
     border: 1.5px dashed rgba(255,255,255,0.55);
     border-radius: 8px;
-    padding: 4px;
+    padding: 5px;
   }
 
   .placed {
@@ -216,12 +217,13 @@
 
   .feedback {
     display: none;
-    margin: 8px auto 0;
-    padding: 10px 12px;
+    margin: 12px auto 0;
+    padding: 14px 16px;
     border-radius: 10px;
     background: rgba(255,255,255,0.96);
     color: #111;
-    max-width: 760px;
+    width: 100%;
+    max-width: 100%;
     box-shadow: 0 6px 14px rgba(0,0,0,0.18);
   }
 
@@ -542,5 +544,6 @@ loadCard();
 
 </body>
 </html>
+
 
 
