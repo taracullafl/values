@@ -112,6 +112,52 @@
 
 .card:active {
     transform: scale(0.98);
+  }
+
+.card.feedback-card {
+    cursor: default;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card.feedback-correct {
+    border: 3px solid #5CB8B2;
+    box-shadow: 0 0 0 4px rgba(92,184,178,0.18), 0 10px 22px rgba(0,0,0,0.18);
+}
+
+.card.feedback-incorrect {
+    border: 3px solid #D64545;
+    box-shadow: 0 0 0 4px rgba(214,69,69,0.18), 0 10px 22px rgba(0,0,0,0.18);
+}
+
+.card-feedback-heading {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 18px;
+    color: #04285C;
+}
+
+.card-feedback-text {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.card-feedback-button {
+    margin-top: 4px;
+    padding: 9px 16px;
+    background: #04285C;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.card-feedback-button:focus-visible {
+    outline: 4px solid #38A8FC;
+    outline-offset: 4px;
 }
 
 @keyframes slideIn {
@@ -500,17 +546,38 @@ function placeCurrentScenario(item) {
 }
 
 function showFeedback(message, isCorrect) {
-  feedbackText.textContent = message;
-  feedbackButton.textContent = isCorrect ? 'Next' : 'Try Again';
-  feedbackButton.onclick = isCorrect ? nextCard : closeFeedback;
-  feedback.style.display = 'block';
-  feedback.focus();
+  feedback.style.display = 'none';
+  scenarioArea.innerHTML = '';
+
+  const feedbackCard = document.createElement('div');
+  feedbackCard.className = `card feedback-card ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}`;
+  feedbackCard.tabIndex = 0;
+  feedbackCard.setAttribute('role', 'status');
+  feedbackCard.setAttribute('aria-live', 'polite');
+
+  const heading = document.createElement('div');
+  heading.className = 'card-feedback-heading';
+  heading.textContent = isCorrect ? 'Correct' : 'Try again';
+
+  const text = document.createElement('div');
+  text.className = 'card-feedback-text';
+  text.textContent = message;
+
+  const button = document.createElement('button');
+  button.className = 'card-feedback-button';
+  button.type = 'button';
+  button.textContent = isCorrect ? 'Next' : 'Try Again';
+  button.onclick = isCorrect ? nextCard : closeFeedback;
+
+  feedbackCard.appendChild(heading);
+  feedbackCard.appendChild(text);
+  feedbackCard.appendChild(button);
+  scenarioArea.appendChild(feedbackCard);
+  feedbackCard.focus();
 }
 
 function closeFeedback() {
-  feedback.style.display = 'none';
-  const card = scenarioArea.querySelector('.card');
-  if (card) card.focus();
+  loadCard();
 }
 
 function nextCard() {
@@ -548,6 +615,7 @@ loadCard();
 
 </body>
 </html>
+
 
 
 
